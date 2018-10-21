@@ -14,17 +14,18 @@ class DataController(
 
 
     @GetMapping("/biking")
-    fun biking() = locationDataRepository.getBikingData()
+    fun biking() = locationDataRepository.getBikingData().asArrays()
 
     @GetMapping("/driving")
-    fun driving() = locationDataRepository.getDrivingData()
+    fun driving() = locationDataRepository.getDrivingData().asArrays()
 
     @GetMapping("/running")
-    fun running() = locationDataRepository.getRunningData()
+    fun running() = locationDataRepository.getRunningData().asArrays()
 
     @GetMapping("/walking")
-    fun walking() = locationDataRepository.getWalkingData()
-
-
+    fun walking() = locationDataRepository.getWalkingData().asArrays()
 }
 
+fun List<Pair<Double, Double>>.asArrays() = map {
+    arrayOf(it.first, it.second)
+}

@@ -8,4 +8,7 @@ class IndexController {
 
     @GetMapping("/")
     fun root() = "index.html"
+
+    @GetMapping("/new")
+    fun new() = "new.html"
 }
