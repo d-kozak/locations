@@ -34,6 +34,11 @@
 <div class="container">
     <h1>Map viz</h1>
     <div id="mapid"></div>
+    <button onclick="requestLocationData('walking')">Walking</button>
+    <button onclick="requestLocationData('biking')">Biking</button>
+    <button onclick="requestLocationData('running')">Running</button>
+    <button onclick="requestLocationData('driving')">Driving</button>
+    <button onclick="clearMap(); showMap();">Clear map</button>
 </div>
 
 
@@ -49,20 +54,20 @@
 
 <script>
     const mainUrl = "http://locations-viz.herokuapp.com/";
-
     const mymap = L.map('mapid').setView([56.25714966666666, 10.0690625], 13);
-    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        maxZoom: 17,
-        attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-    }).addTo(mymap);
+    showMap();
 
 
-    getLocationData("biking")
-        .then(data => showLocationData(data))
-        .catch(reason => alert(reason));
+    function requestLocationData(transportKind) {
+        getLocationData(transportKind)
+            .then(data => {
+                showLocationData(data);
+                console.log("Location data for " + transportKind + " showed")
+            })
+            .catch(reason => alert(reason));
+    }
 
     function showLocationData(data) {
-        console.log(data);
         data.forEach(arr => {
             L.circle(arr, {
                 color: 'blue',
@@ -76,6 +81,18 @@
     function getLocationData(transportKind) {
         return fetch(mainUrl + transportKind)
             .then(data => data.json())
+    }
+
+    function showMap() {
+        L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17,
+            attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+        }).addTo(mymap);
+    }
+
+    function clearMap() {
+        console.log("Clearing the map");
+        mymap.eachLayer(layer => mymap.removeLayer(layer));
     }
 
 
