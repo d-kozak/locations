@@ -7,17 +7,24 @@ import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-class HelloController(
+class DataController(
         @Autowired
         private val locationDataRepository: LocationDataRepository
 ) {
 
 
-    @GetMapping("/hello")
-    fun sayHello() = "Hello"
-
-    @GetMapping("/bike")
+    @GetMapping("/biking")
     fun biking() = locationDataRepository.getBikingData()
+
+    @GetMapping("/driving")
+    fun driving() = locationDataRepository.getDrivingData()
+
+    @GetMapping("/running")
+    fun running() = locationDataRepository.getRunningData()
+
+    @GetMapping("/walking")
+    fun walking() = locationDataRepository.getWalkingData()
+
 
 }
 

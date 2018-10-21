@@ -8,27 +8,47 @@ import org.springframework.stereotype.Service
 class LocationDataRepository {
 
     @Value("classpath:static/data/Biking.csv")
-    private var resource: Resource? = null
+    private lateinit var bikingResource: Resource
 
-    fun getBikingData(): List<Pair<Double, Double>> {
-        val content = resource?.inputStream?.bufferedReader().use {
-            it?.readText() ?: ""
-        }.split("\n")
-        val withoutHeader = if (content.size > 1)
-            content.subList(1, content.size)
-        else content
+    @Value("classpath:static/data/Driving.csv")
+    private lateinit var drivingResource: Resource
 
-        return withoutHeader.map {
-            val split = it.split(",")
-            if (split.size > 3) {
+    @Value("classpath:static/data/Running.csv")
+    private lateinit var runningResource: Resource
+
+    @Value("classpath:static/data/Walking.csv")
+    private lateinit var walkingResource: Resource
+
+    fun getBikingData(): List<Pair<Double, Double>> = bikingResource.asLocations()
+
+    fun getDrivingData(): List<Pair<Double, Double>> = drivingResource.asLocations()
+
+    fun getRunningData(): List<Pair<Double, Double>> = runningResource.asLocations()
+
+    fun getWalkingData(): List<Pair<Double, Double>> = walkingResource.asLocations()
+
+
+}
+
+private fun Resource.asLocations(): List<Pair<Double, Double>> {
+    val content = loadFileContent(this).split("\n")
+    val withoutHeader = if (content.size > 1)
+        content.subList(1, content.size)
+    else content
+
+    return withoutHeader
+            .asSequence()
+            .map { it.split(",") }
+            .filter { it.size >= 3 }
+            .map {
                 try {
-                    split[1].toDouble() to split[2].toDouble()
+                    it[1].toDouble() to it[2].toDouble()
                 } catch (ex: NumberFormatException) {
                     -1.0 to -1.0
                 }
-            } else -1.0 to -1.0
-        }.filter {
-            it.first != -1.0 && it.second != -1.0
-        }
-    }
+            }.toList()
+}
+
+private fun loadFileContent(resource: Resource) = resource.inputStream.bufferedReader().use {
+    it.readText()
 }
