@@ -39,6 +39,8 @@
     <button onclick="requestLocationData('running')">Running</button>
     <button onclick="requestLocationData('driving')">Driving</button>
     <button onclick="clearMap(); showMap();">Clear map</button>
+    <label for="showFilteredDataCheckbox">Show filtered data</label>
+    <input id="showFilteredDataCheckbox" type="checkbox" onclick="showFiltered = !showFiltered">
 </div>
 
 
@@ -55,6 +57,7 @@
 <script>
     const mainUrl = "http://locations-viz.herokuapp.com/";
     const mymap = L.map('mapid').setView([56.25714966666666, 10.0690625], 13);
+    let showFiltered = false;
     showMap();
     startHealthPingEcho();
 
@@ -75,17 +78,23 @@
     function requestLocationData(transportKind) {
         getLocationData(transportKind)
             .then(data => {
-                showLocationData(data);
-                console.log("Location data for " + transportKind + " showed")
+                showLocationData(data, 'blue');
+                console.log("Location data for " + transportKind + " showed");
+
+                if (showFiltered) {
+                    const filtered = meanFilter(data);
+                    showLocationData(filtered, 'red');
+                }
+
             })
             .catch(reason => alert(reason));
     }
 
-    function showLocationData(data) {
+    function showLocationData(data, color) {
         data.forEach(arr => {
             L.circle(arr, {
-                color: 'blue',
-                fillColor: 'blue',
+                color: color,
+                fillColor: color,
                 fillOpacity: 0.9,
                 radius: 5
             }).addTo(mymap);
@@ -107,6 +116,26 @@
     function clearMap() {
         console.log("Clearing the map");
         mymap.eachLayer(layer => mymap.removeLayer(layer));
+    }
+
+    function meanFilter(data) {
+        const limit = 10;
+
+        function averageOf(data, index, limit) {
+            let sumX = 0.0;
+            let sumY = 0.0;
+            for (let i = 0; i < limit; i++) {
+                sumX += data[index - i][0];
+                sumY += data[index - i][1];
+            }
+            return [sumX / limit, sumY / limit];
+        }
+
+        const result = data.slice(0, limit);
+        for (let i = limit; i < data.length; i++) {
+            result.push(averageOf(data, i, limit))
+        }
+        return result;
     }
 
 
