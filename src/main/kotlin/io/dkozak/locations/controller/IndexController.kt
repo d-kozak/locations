@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping
 class IndexController {
 
     @GetMapping("/")
-    fun root() = "index.html"
+    fun root() = "index"
 
     @GetMapping("/new")
-    fun new() = "new.html"
+    fun new() = "new"
 }
