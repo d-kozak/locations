@@ -56,7 +56,21 @@
     const mainUrl = "http://locations-viz.herokuapp.com/";
     const mymap = L.map('mapid').setView([56.25714966666666, 10.0690625], 13);
     showMap();
+    startHealthPingEcho();
 
+    function startHealthPingEcho() {
+        setInterval(() => {
+            fetch(mainUrl + "health")
+                .then(response => {
+                    if (response.status === 200) {
+                        console.log("Server OK")
+                    } else {
+                        console.warn(response);
+                    }
+                })
+                .catch(reason => console.error(reason));
+        }, 1000);
+    }
 
     function requestLocationData(transportKind) {
         getLocationData(transportKind)
