@@ -11,4 +11,7 @@ class IndexController {
 
     @GetMapping("/new")
     fun new() = "new"
+
+    @GetMapping("/availability")
+    fun availability() = "availability"
 }
