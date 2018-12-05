@@ -11,4 +11,4 @@ The data can be filtered using a mean filter. Application is cloud ready and was
 
 ## Notes
 * Application does not support https, so if you want to use it, please switch from https to http.
-* Mean filter should be moved from client to server, so that client is as thing as possible and performs only visualization.
+* Mean filter should be moved from client to server, so that client is as thin as possible and performs only visualization.
